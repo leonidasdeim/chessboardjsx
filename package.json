@@ -1,5 +1,5 @@
 {
-  "name": "chessboardjsx",
+  "name": "@leonidasdeim/chessboardjsx",
   "version": "2.4.7",
   "description": "Chessboard.jsx is a chessboard for React. Inspired by chessboard.js",
   "main": "dist/chessboard.min.js",
