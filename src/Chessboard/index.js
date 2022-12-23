@@ -47,7 +47,7 @@ class Chessboard extends Component {
      * Signature: { wK:
      * function({ isDragging, squareWidth, droppedPiece, targetSquare, sourceSquare }) => jsx }
      */
-    pieces: PropTypes.object,
+    pieces: PropTypes.array,
     /**
      * The width in pixels.  For a responsive width, use calcWidth.
      */
@@ -193,7 +193,7 @@ class Chessboard extends Component {
     lightSquareStyle: { backgroundColor: 'rgb(240, 217, 181)' },
     darkSquareStyle: { backgroundColor: 'rgb(181, 136, 99)' },
     squareStyles: {},
-    dropSquareStyle: { boxShadow: 'inset 0 0 1px 4px yellow' },
+    dropSquareStyle: { boxShadow: 'inset 0 0 1px 4px cYellow' },
     calcWidth: () => {},
     roughSquare: () => {},
     onMouseOverSquare: () => {},
@@ -277,7 +277,7 @@ class Chessboard extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    const { position, undo } = props;
+    const { position, undo, pieces } = props;
     const {
       currentPosition,
       manualDrop,
@@ -297,6 +297,7 @@ class Chessboard extends Component {
 
       if (manualDrop) {
         return {
+          pieces,
           sourceSquare,
           targetSquare,
           sourcePiece,
@@ -310,6 +311,7 @@ class Chessboard extends Component {
         Possible to add functionality for transitioning of multiple pieces later */
       if (squaresAffected && squaresAffected !== 2) {
         return {
+          pieces,
           currentPosition: positionFromProps,
           waitForTransition: false,
           manualDrop: false,
@@ -322,14 +324,18 @@ class Chessboard extends Component {
       // Check if currentPosition has a piece occupying the target square
       if (currentPosition[targetSquare]) {
         // Temporarily delete the target square from the new position
-        delete positionFromProps[targetSquare];
+        let tempPosition = {
+          ...positionFromProps
+        }
+        delete tempPosition[targetSquare];
 
         return {
+          pieces,
           sourceSquare,
           targetSquare,
           sourcePiece,
           // Set the current position to the new position minus the targetSquare
-          currentPosition: positionFromProps,
+          currentPosition: tempPosition,
           waitForTransition: squareClicked ? false : true,
           phantomPiece: squareClicked
             ? null
@@ -342,6 +348,7 @@ class Chessboard extends Component {
       // allows for taking back a move
       if (undo) {
         return {
+          pieces,
           sourceSquare,
           targetSquare,
           sourcePiece,
@@ -354,6 +361,7 @@ class Chessboard extends Component {
       }
 
       return {
+        pieces,
         sourceSquare,
         targetSquare,
         sourcePiece,
@@ -365,7 +373,9 @@ class Chessboard extends Component {
     }
 
     // default case
-    return null;
+    return {
+      pieces
+    };
   }
 
   wasManuallyDropped = bool => this.setState({ manualDrop: bool });

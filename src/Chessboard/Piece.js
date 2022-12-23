@@ -76,7 +76,7 @@ class Piece extends Component {
     getSquareCoordinates: PropTypes.func,
     onDrop: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
     transitionDuration: PropTypes.number,
-    pieces: PropTypes.object,
+    pieces: PropTypes.array,
     sourceSquare: PropTypes.string,
     targetSquare: PropTypes.string,
     waitForTransition: PropTypes.bool,
@@ -86,22 +86,22 @@ class Piece extends Component {
     allowDrag: PropTypes.func
   };
 
-  shouldComponentUpdate(nextProps) {
-    const shouldPieceUpdate =
-      nextProps.dropTarget !== null ||
-      nextProps.isDragging ||
-      this.props.isDragging ||
-      // if the position comes from the position prop, check if it is a different position
-      this.props.sourceSquare !== nextProps.sourceSquare ||
-      this.props.waitForTransition !== nextProps.waitForTransition ||
-      // if the screen size changes then update
-      this.props.width !== nextProps.width;
+  // shouldComponentUpdate(nextProps) {
+  //   const shouldPieceUpdate =
+  //     nextProps.dropTarget !== null ||
+  //     nextProps.isDragging ||
+  //     this.props.isDragging ||
+  //     // if the position comes from the position prop, check if it is a different position
+  //     this.props.sourceSquare !== nextProps.sourceSquare ||
+  //     this.props.waitForTransition !== nextProps.waitForTransition ||
+  //     // if the screen size changes then update
+  //     this.props.width !== nextProps.width;
 
-    if (shouldPieceUpdate) {
-      return true;
-    }
-    return false;
-  }
+  //   if (shouldPieceUpdate) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
   componentDidMount() {
     window.addEventListener('touchstart', this.props.setTouchState);
@@ -182,6 +182,13 @@ const pieceSource = {
 
     // trash piece when dropped off board
     if (!didDrop && dropOffBoard === 'trash') {
+      if (onDrop.length) {
+        return onDrop({
+          sourceSquare: square,
+          targetSquare: 'offBoard',
+          piece
+        });
+      }
       return setPosition({ sourceSquare: square, piece });
     }
 
